@@ -25,8 +25,11 @@ TEST_GROUP(LedDriver)
 // 4. Check boundary conditions.
 // 5. Check out-of-boundary conditions.
 
-TEST(LedDriver, Create)
+TEST(LedDriver, LedsOffAfterCreate)
 {
+  uint8_t virtualLeds = 0xff;
+  LedDriver_Create(); //&virtualLeds
+  LONGS_EQUAL(0, virtualLeds);
   FAIL("Start here");
 }
 

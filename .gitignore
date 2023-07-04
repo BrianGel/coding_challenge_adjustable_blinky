@@ -3,3 +3,6 @@ build
 objs
 sdkconfig.old
 lib
+Adjustable_Blinky_CppUTest_tests
+docs
+managed_components
