@@ -5,7 +5,7 @@
 void ADCDriver_Create(void);
 void ADCDriver_Destroy(void);
 
-uint32_t ADCDriver_get_voltage(void);
+bool ADCDriver_read_voltage(uint16_t *voltage_in_mV);
 
 
 #endif  /* D_ADCDriver_H */

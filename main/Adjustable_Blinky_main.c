@@ -9,7 +9,7 @@
 #include "sdkconfig.h"
 #include "ADCDriver.h"
 
-static uint32_t data;
+static uint16_t voltage_in_mV;
 static const char *TAG = "Main";
 
 void app_main(void)
@@ -19,13 +19,21 @@ void app_main(void)
     LedDriver_Create();
     ADCDriver_Create();    
     ESP_LOGI(TAG, "Initialized ADC");
-    data = ADCDriver_get_voltage();
-    ESP_LOGI(TAG, "Value: %"PRIx32, data);
+    // voltage = ADCDriver_get_voltage();
+    // ESP_LOGI(TAG, "Value: %d", voltage);
 
     while (1) {
-        // ESP_LOGI(TAG, "Value: %"PRIx32, mydata);
+        ADCDriver_read_voltage(&voltage_in_mV);
+        ESP_LOGI(TAG, " Cali Voltage: %d mV", voltage_in_mV);
         /* Toggle the LED state */
         toggle_led();
+
+        vTaskDelay(pdMS_TO_TICKS(90));
         vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
     }
+}
+
+static void adjustable_blink_sleep(void)
+{
+    vTaskDelay(pdMS_TO_TICKS(90));
 }

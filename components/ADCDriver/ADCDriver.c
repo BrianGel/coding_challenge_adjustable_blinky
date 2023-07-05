@@ -33,7 +33,7 @@ const static char *TAG = "EXAMPLE";
  * On ESP32C3, ADC2 is no longer supported, due to its HW limitation.
  * Search for errata on espressif website for more details.
  */
-#define EXAMPLE_USE_ADC2            1
+#define EXAMPLE_USE_ADC2            0
 #endif
 
 #if EXAMPLE_USE_ADC2
@@ -52,13 +52,14 @@ static int voltage[2][10];
 static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle);
 static void example_adc_calibration_deinit(adc_cali_handle_t handle);
 static bool do_calibration1_chan0;
-static bool do_calibration1_chan1;
+static bool do_calibration1_chan1 = false;
 static adc_oneshot_unit_handle_t adc1_handle;
 static adc_oneshot_unit_handle_t adc2_handle;
 static adc_cali_handle_t adc2_cali_handle = NULL;
 static adc_cali_handle_t adc1_cali_chan0_handle = NULL;
 static adc_cali_handle_t adc1_cali_chan1_handle = NULL;
 static bool do_calibration2;
+// static int adc_voltage = 0;
 
 
 void ADCDriver_Create(void)
@@ -76,13 +77,13 @@ void ADCDriver_Create(void)
         .atten = EXAMPLE_ADC_ATTEN,
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, EXAMPLE_ADC1_CHAN0, &config));
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, EXAMPLE_ADC1_CHAN1, &config));
+    // ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, EXAMPLE_ADC1_CHAN1, &config));
 
     //-------------ADC1 Calibration Init---------------//
     // adc_cali_handle_t adc1_cali_chan0_handle = NULL;
     // adc_cali_handle_t adc1_cali_chan1_handle = NULL;
     do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, EXAMPLE_ADC1_CHAN0, EXAMPLE_ADC_ATTEN, &adc1_cali_chan0_handle);
-    do_calibration1_chan1 = example_adc_calibration_init(ADC_UNIT_1, EXAMPLE_ADC1_CHAN1, EXAMPLE_ADC_ATTEN, &adc1_cali_chan1_handle);
+    // do_calibration1_chan1 = example_adc_calibration_init(ADC_UNIT_1, EXAMPLE_ADC1_CHAN1, EXAMPLE_ADC_ATTEN, &adc1_cali_chan1_handle);
 
 
 #if EXAMPLE_USE_ADC2
@@ -166,34 +167,42 @@ void ADCDriver_Destroy(void)
 #endif //#if EXAMPLE_USE_ADC2
 }
 
-uint32_t ADCDriver_get_voltage(void){
-        ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN0, &adc_raw[0][0]));
-        ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, adc_raw[0][0]);
+bool ADCDriver_read_voltage(uint16_t *voltage_in_mV){
+      
         if (do_calibration1_chan0) {
+			ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN0, &adc_raw[0][0]));
+        	// ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, adc_raw[0][0]);
             ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc1_cali_chan0_handle, adc_raw[0][0], &voltage[0][0]));
-            ESP_LOGI(TAG, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, voltage[0][0]);
+            // ESP_LOGI(TAG, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, voltage[0][0]);
+			*voltage_in_mV = voltage[0][0];
+			return true;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
 
-        ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN1, &adc_raw[0][1]));
-        ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN1, adc_raw[0][1]);
+        // vTaskDelay(pdMS_TO_TICKS(1000));
+
+        
         if (do_calibration1_chan1) {
+			ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN1, &adc_raw[0][1]));
+        	ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN1, adc_raw[0][1]);
             ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc1_cali_chan1_handle, adc_raw[0][1], &voltage[0][1]));
             ESP_LOGI(TAG, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN1, voltage[0][1]);
+			*voltage_in_mV = voltage[0][1];
+			return true;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        // vTaskDelay(pdMS_TO_TICKS(1000));
 
-#if EXAMPLE_USE_ADC2
+	#if EXAMPLE_USE_ADC2
         ESP_ERROR_CHECK(adc_oneshot_read(adc2_handle, EXAMPLE_ADC2_CHAN0, &adc_raw[1][0]));
         ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_2 + 1, EXAMPLE_ADC2_CHAN0, adc_raw[1][0]);
         if (do_calibration2) {
             ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc2_cali_handle, adc_raw[1][0], &voltage[1][0]));
             ESP_LOGI(TAG, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_2 + 1, EXAMPLE_ADC2_CHAN0, voltage[1][0]);
+			*voltage_in_mV = voltage[1][0];
+			return true;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
-#endif  //#if EXAMPLE_USE_ADC2
-	uint32_t data = 0xffffffff;
-	return data;
+        // vTaskDelay(pdMS_TO_TICKS(1000));
+	#endif  //#if EXAMPLE_USE_ADC2
+	return false;
 }
 
 
