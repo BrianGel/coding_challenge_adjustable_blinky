@@ -16,24 +16,18 @@
 
 TEST_CASE("LED frequency change response time is lower then 100ms", "[]")
 {
-    uint16_t voltage_in_mV_temp = 1000;
-    uint64_t start_time = esp_timer_get_time();
+    adjustable_blinky_create();
+    set_voltage_in_mV_temp(1000);
+    float loop_duration_in_s = 0.1;
 
-    vTaskDelay(110);
-    
+    // Observation: pdMS_TO_TICKS is off by times 10. pdMS_TO_TICKS(10) are 100ms
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    uint64_t start_time = esp_timer_get_time();
+    sleep_with_intermediate_voltage_poll(loop_duration_in_s);
 
     // check if the function returns within 100ms
     uint64_t end_time = esp_timer_get_time();
     uint32_t elapsed_time = end_time - start_time;
     TEST_ASSERT_TRUE(elapsed_time <= 100);
-}
-
-void setUp(void)
-{
-    // set up test environment
-}
-
-void tearDown(void)
-{
-    // clean up test environment
 }
