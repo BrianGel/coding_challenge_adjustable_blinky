@@ -9,7 +9,13 @@
 		"gpio.h": "c",
 		"leddriver.h": "c",
 		"adc_continuous.h": "c",
-		"adc_oneshot.h": "c"
+		"adc_oneshot.h": "c",
+		"compare": "c",
+		"cmath": "c",
+		"adjustable_blinky_main.h": "c",
+		"led_strip.h": "c",
+		"adjustable_blinky.h": "c",
+		"esp_log.h": "c"
 	},
 	"idf.port": "/dev/cu.usbmodem1433201",
 	"idf.flashType": "UART"

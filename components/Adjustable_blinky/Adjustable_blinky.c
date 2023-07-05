@@ -20,6 +20,8 @@ static uint16_t voltage_in_mV;
 static uint16_t voltage_in_mV_temp;
 static const char *TAG = "Main";
 static float frequency_in_Hz;
+float period; 
+float half_period;
 
 static float convert_cached_voltage_to_frequency()
 {
@@ -51,15 +53,13 @@ static void set_voltage()
     voltage_in_mV = voltage_in_mV_temp;
 }
 
-float convert_frequency_to_period(float frequency)
+static void convert_frequency_to_period(float frequency)
 {
-    float period;
     period = (1 / frequency);
-
-    return period;
+    // return period;
 }
 
-static void sleep_with_intermediate_voltage_poll(float duration_in_s)
+void sleep_with_intermediate_voltage_poll(float duration_in_s)
 {    
     uint16_t interval_count = (uint16_t)(duration_in_s * 1000 / POLLING_PERIOD_IN_MS);
     
@@ -76,7 +76,7 @@ static void sleep_with_intermediate_voltage_poll(float duration_in_s)
     
 }
 
-void app_main(void)
+void adjustable_blinky_create(void)
 {   
     /* Configure the peripheral according to the LED type */
     LedDriver_Create();
@@ -84,15 +84,15 @@ void app_main(void)
     ADCDriver_Create();    
     ESP_LOGI(TAG, "Initialized ADC Driver");
     ADCDriver_read_voltage(&voltage_in_mV);
+}
 
-    float period; 
-    float half_period;
-
-    while (1) {
+void adjustable_blinky_run(void) 
+{
+    while(1){
         frequency_in_Hz = convert_cached_voltage_to_frequency();
-        period = convert_frequency_to_period(frequency_in_Hz);
+        convert_frequency_to_period(frequency_in_Hz);
         half_period = period / 2;
-        ESP_LOGI(TAG, "Hallo? %f", frequency_in_Hz); 
+        ESP_LOGI(TAG, "Frequency is %f", frequency_in_Hz); 
 
         LED_Driver_Turn_LED_on();
         sleep_with_intermediate_voltage_poll(half_period);
