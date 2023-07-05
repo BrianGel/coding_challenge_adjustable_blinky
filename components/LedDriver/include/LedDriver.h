@@ -3,8 +3,8 @@
 
 void LedDriver_Create(void);
 void LedDriver_Destroy(void);
-
-void toggle_led(void);
+void LED_Driver_Turn_LED_on(void);
+void LED_Driver_Turn_LED_off(void);
 
 // void configure_led(void)
 // void blink_led(void)
