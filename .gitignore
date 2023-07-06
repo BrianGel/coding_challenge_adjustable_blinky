@@ -1,8 +1,12 @@
 .history
 build
 objs
+sdkconfig
 sdkconfig.old
 lib
 Adjustable_Blinky_CppUTest_tests
 docs
 managed_components
+.vscode
+dependencies.lock
+docs/

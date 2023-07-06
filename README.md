@@ -1,53 +1,26 @@
-# Project Title
-
-Simple overview of use/purpose.
+# Adjustable Blinky
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+This project implements a simple LED blinky program that can be adjusted based on an input voltage. The program uses a esp32S3 microcontroller to read the input voltage and adjust the blink rate of an LED accordingly.
 
 ## Getting Started
 
-### Dependencies
-
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
+To get started with this project, you will need a ESP32-S3-DevKitC-1 board that supports the required peripherals (ADC, GPIO, etc.). You will also need simple voltage divider including a potentiometer to connect to the microcontroller board.
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+Installing
+To install this project, follow these steps:
 
-### Executing program
-
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
-
-## Help
-
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
-
-## Authors
-
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
-
-## Version History
-
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
-
+1. Clone the repository to your local machine.
+2. Open the project in your IDE.
+3. Get the required framework ESP-IDF for compiling esp32 projects.  
+4. Set the target in ESP-IDF to esp32S3. 
+5. Build a general esp config. 
+6. Build the project using the provided build script for an esp32S3 Target. 
+7. Flash the resulting binary to your microcontroller board.
+   
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+This project is licensed under the MIT License.
