@@ -70,14 +70,14 @@ void sleep_with_intermediate_voltage_poll(float duration_in_s)
     uint16_t interval_count = (uint16_t)(duration_in_s * 1000 / POLLING_PERIOD_IN_MS);
     for(int i = 0; i <= interval_count; i++) 
     {
-        // Observation: pdMS_TO_TICKS is off by times 10. pdMS_TO_TICKS(10) are 100ms
-        vTaskDelay(pdMS_TO_TICKS((POLLING_PERIOD_IN_MS/10)));
+        ADCDriver_read_voltage(&voltage_in_mV_temp);
+        vTaskDelay(pdMS_TO_TICKS((POLLING_PERIOD_IN_MS)));
         if(check_for_voltage_change(voltage_in_mV_temp))
         {
             set_voltage();
             return;
         } 
-        ADCDriver_read_voltage(&voltage_in_mV_temp);
+       
     }
     return; 
     
@@ -102,6 +102,10 @@ void adjustable_blinky_run(void)
         // ESP_LOGI(TAG, "Frequency is %f", frequency_in_Hz); 
 
         LED_Driver_Turn_LED_on();
+
+        // TODO: Update ADC Driver to get value directly from DMA and Timer
+        // from ADC Interrupt. Due to time project time constrain, polling was implemented. 
+        
         sleep_with_intermediate_voltage_poll(half_period);
         
         if (!(frequency_in_Hz < FREQUENCY_ALWAYS_ON_THRESHOLD)) {
