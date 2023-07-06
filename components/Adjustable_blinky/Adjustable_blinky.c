@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "LedDriver.h"
-#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -42,6 +41,7 @@ static bool check_for_voltage_change(uint16_t recent_voltage_reading_in_mV)
 {
     // ADCDriver_read_voltage(&voltage_in_mV_temp);
     // ESP_LOGI("check_for_voltage_change", "voltage %d", voltage_in_mV_temp);
+    // TODO: replace argument with voltage_in_mV_temp interna
     if(voltage_in_mV > (recent_voltage_reading_in_mV + HYSTRERESIS_VOLTAGE_MESSURSMENT) ||
         voltage_in_mV < (recent_voltage_reading_in_mV - HYSTRERESIS_VOLTAGE_MESSURSMENT) )
     {
